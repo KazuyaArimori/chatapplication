@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <title>Chatアプリ</title>
+    <link rel="stylesheet" href="css/sample.css">
+</head>
+
+<body>
+
+    <!-- コンテンツ表示画面 -->
+
+<div>
+        <div>
+            <input type="text" id="uname">
+        </div>
+        <div> 
+            <textarea name="" id="text" cols="30" rows="10"></textarea>
+            <button id="send">送信</button>
+        </div>
+        <div id="output"></div>
+</div>
+<div id="ball"></div>
+</div>
+<a class="pagetop" href="#"><div class="pagetop__arrow"></div></a>
+
+    <!--/ コンテンツ表示画面 -->
+
+    <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- JQuery -->
+
+
+    <!--** 以下Firebase **-->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+        import { getDatabase, ref, push, set, onChildAdded, remove, onChildRemoved }
+        from "https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.2/firebase-database.js";
+
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyBLWJ7UL0iIvVTR3yknReg4jrY-T9dX5xw",
+            authDomain: "fir-demo-88b86.firebaseapp.com",
+            projectId: "fir-demo-88b86",
+            storageBucket: "fir-demo-88b86.appspot.com",
+            messagingSenderId: "187548417143",
+            appId: "1:187548417143:web:b75c1495288d53d447da72",
+            measurementId: "G-SHF3G95BX2"
+        };
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+// Realtime DB に接続する
+const db = getDatabase(app);
+const dbRef = ref(db, "chat");
+// 送信ボタンが押されたら、データをDBに送信
+$("#send").on("click", function () {
+    // 保存したいデータのオブジェクトを作る
+    const msg = {
+        uname: $("#uname").val(),
+        text: $("#text").val()
+    };
+    console.log(msg)
+
+    // 新規のデータを送れる状態にセット
+    const newPostRef = push(dbRef);
+    // DBに値を送信
+    set(newPostRef, msg);
+});
+
+onChildAdded(dbRef, function (data) {
+    const msg = data.val();
+    const key = data.key;
+    const h = `<p id="${key}" class="message">${msg.uname}: ${msg.text}</p>`; 
+    $('#output').append(h);
+});
+
+$('#output').on('click','.message', function(){
+  alert('削除します');
+  $(this)
+  const chatRef = ref(db,"chat/");
+  remove(chatRef);
+});
+
+onChildRemoved(dbRef, function (data) {
+    const msg = data.val();
+    const key = data.key;
+    const h = `<p id="${key}" class="message">${msg.uname}: ${msg.text}</p>`; 
+    $('#output').remove();
+});
+
+// 下までスクロールする
+var scrollToBottom = () => {
+      container.scrollTop = container.scrollHeight;
+    };
+    
+    // 一番下までスクロールしているかどうか
+    var isScrollBottom = () => {
+      return container.scrollHeight === container.scrollTop + container.offsetHeight;
+    };
+    
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      // 一番下までスクロールされていれば追加後も一番下までスクロールする
+      if (isScrollBottom()) {
+        addChat();
+        scrollToBottom();
+      }
+      // 一番下までスクロールされていなければスクロールしない
+      else {
+        addChat();
+      }
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+  var ball = document.getElementById("ball");
+
+  document.addEventListener("keydown", function(event) {
+    if (event.key === "Enter") {
+      animateBasketball();
+    }
+  });
+
+  function animateBasketball() {
+    // メッセージの表示を非表示にする
+    var message = document.getElementById("message");
+    message.style.display = "none";
+
+    // バスケットボールをシュートするアニメーション
+    ball.style.transform = "translateY(-300px)";
+    
+    // 一定時間後にリセットする
+    setTimeout(resetAnimation, 1000);
+  }
+
+  function resetAnimation() {
+    // バスケットボールの位置を初期化する
+    ball.style.transform = "translateY(0)";
+    
+    // メッセージを再表示する
+    var message = document.getElementById("message");
+    message.style.display = "block";
+  }
+});
+
+    </script>
+
+</body>
+
+</html>
